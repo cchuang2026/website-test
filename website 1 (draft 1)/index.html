@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC's C++ Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+        
+        :root {
+            --cc-green: #00ff9f;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .code-container {
+            font-size: 0.9rem;
+        }
+
+        .cc-float {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .snippet-card {
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        .snippet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .geass-glow {
+            text-shadow: 0 0 15px #00ff9f;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col transition-all duration-300">
+            <!-- Logo -->
+            <div class="p-6 border-b border-zinc-800 flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-emerald-400 rounded-xl flex items-center justify-center text-2xl">🟢</div>
+                <div>
+                    <h1 class="title-font text-2xl font-bold tracking-tighter text-white">CC's C++</h1>
+                    <p class="text-xs text-emerald-400">Corner</p>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="p-4">
+                <div class="relative">
+                    <input id="search-input" 
+                           type="text" 
+                           placeholder="搜索 Snippets..." 
+                           class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-400 transition-colors">
+                    <i class="fas fa-search absolute right-4 top-3.5 text-zinc-500"></i>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="flex-1 overflow-auto px-3">
+                <div id="categories-list" class="space-y-1"></div>
+            </div>
+
+            <!-- Footer info -->
+            <div class="p-4 border-t border-zinc-800 text-xs text-zinc-500">
+                <div class="flex items-center justify-between">
+                    <span>Powered by localStorage</span>
+                    <button onclick="resetData()" 
+                            class="text-red-400 hover:text-red-300 transition-colors flex items-center gap-1">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Top Nav -->
+            <nav class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('home')">
+                        <span class="text-2xl">🐱</span>
+                        <span class="title-font font-semibold text-xl">CC's C++ Corner</span>
+                    </div>
+                    
+                    <div class="flex gap-6 text-sm">
+                        <a onclick="navigateTo('home')" class="cursor-pointer hover:text-emerald-400 transition-colors nav-link" data-page="home">Home</a>
+                        <a onclick="navigateTo('snippets')" class="cursor-pointer hover:text-emerald-400 transition-colors nav-link active" data-page="snippets">My Snippets</a>
+                        <a onclick="navigateTo('visualizer')" class="cursor-pointer hover:text-emerald-400 transition-colors nav-link" data-page="visualizer">Visualizer</a>
+                        <a onclick="navigateTo('progress')" class="cursor-pointer hover:text-emerald-400 transition-colors nav-link" data-page="progress">Progress</a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleDarkMode()" 
+                            class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-zinc-800 transition-colors">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="https://github.com" target="_blank"
+                       class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-sm transition-colors">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <button onclick="showAddModal()" 
+                            class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all active:scale-95">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Snippet</span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div id="main-content" class="flex-1 overflow-auto p-8">
+                <!-- Home / Welcome -->
+                <div id="home-page" class="max-w-4xl mx-auto">
+                    <div class="text-center py-16">
+                        <div class="inline-flex items-center gap-3 mb-6">
+                            <div class="text-7xl">🟢</div>
+                            <h1 class="title-font text-7xl font-bold tracking-tighter geass-glow">CC's C++ Corner</h1>
+                        </div>
+                        <p class="text-2xl text-zinc-400 mb-8">Competitive Programming Snippets &amp; Learning Tool</p>
+                        
+                        <div class="bg-zinc-900/70 border border-zinc-700 rounded-3xl p-8 max-w-lg mx-auto">
+                            <img id="cc-welcome" src="https://picsum.photos/id/1015/400/300" 
+                                 class="w-full rounded-2xl mb-6 shadow-2xl" alt="C.C.">
+                            <p class="text-emerald-300 italic">"Code is like pizza. Even when it's bad, it's still pretty good. But yours... yours is delicious, master~"</p>
+                            <button onclick="navigateTo('snippets')" 
+                                    class="mt-8 px-8 py-4 bg-white text-black rounded-2xl font-semibold hover:scale-105 transition-transform">
+                                Start Exploring →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Snippets List -->
+                <div id="snippets-page" class="hidden">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-semibold">My Snippets</h2>
+                        <div class="text-sm text-zinc-400" id="snippet-count">0 snippets</div>
+                    </div>
+                    <div id="snippets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Single Snippet View -->
+                <div id="snippet-detail" class="hidden">
+                    <button onclick="backToList()" class="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 mb-6">
+                        <i class="fas fa-arrow-left"></i> Back to Snippets
+                    </button>
+                    
+                    <div class="max-w-4xl mx-auto bg-zinc-900 rounded-3xl p-8 border border-zinc-700">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <span id="detail-category" class="px-3 py-1 text-xs rounded-full bg-emerald-900 text-emerald-300"></span>
+                                    <h1 id="detail-title" class="text-4xl font-semibold"></h1>
+                                </div>
+                                <p id="detail-desc" class="text-zinc-400 mt-2"></p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editCurrentSnippet()" 
+                                        class="px-5 py-2 rounded-2xl border border-zinc-700 hover:bg-zinc-800 transition-colors">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteCurrentSnippet()" 
+                                        class="px-5 py-2 rounded-2xl border border-red-900 hover:bg-red-950 text-red-400 transition-colors">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Code -->
+                            <div class="lg:col-span-2">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="font-medium">C++ Code</span>
+                                    <button onclick="copyCode()" 
+                                            class="text-xs flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300">
+                                        <i class="fas fa-copy"></i> COPY
+                                    </button>
+                                </div>
+                                <pre id="code-block" class="code-container bg-black p-6 rounded-2xl overflow-auto max-h-[500px]"><code id="prism-code" class="language-cpp"></code></pre>
+                            </div>
+
+                            <!-- Sidebar Info -->
+                            <div>
+                                <div class="bg-zinc-950 rounded-2xl p-6 border border-zinc-800 mb-6">
+                                    <h3 class="font-medium mb-4">Analysis</h3>
+                                    <div id="detail-analysis" class="space-y-4 text-sm"></div>
+                                </div>
+                                
+                                <button onclick="markAsLearned()" 
+                                        class="w-full py-4 bg-gradient-to-r from-emerald-500 to-purple-500 rounded-2xl font-medium hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-pizza-slice"></i>
+                                    <span>Mark as Learned (+1 Pizza)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Test Runner -->
+                        <div class="mt-10">
+                            <h3 class="font-medium mb-3">Test Runner</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm mb-2 text-zinc-400">Input</label>
+                                    <textarea id="test-input" rows="8" 
+                                        class="w-full bg-black border border-zinc-700 rounded-2xl p-4 font-mono text-sm resize-y"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-2 text-zinc-400">Output</label>
+                                    <pre id="test-output" 
+                                        class="bg-black border border-zinc-700 rounded-2xl p-4 font-mono text-sm min-h-[200px] overflow-auto"></pre>
+                                </div>
+                            </div>
+                            <button onclick="runTest()" 
+                                    class="mt-4 px-8 py-3 bg-white text-black rounded-2xl font-semibold">
+                                Run Simulation →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizer Page -->
+                <div id="visualizer-page" class="hidden max-w-5xl mx-auto">
+                    <h2 class="text-3xl font-semibold mb-8">Algorithm Visualizers</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div onclick="alert('Fenwick Tree Visualizer coming soon! 🟢')" 
+                             class="bg-zinc-900 p-8 rounded-3xl cursor-pointer hover:ring-2 hover:ring-emerald-400 transition-all">
+                            <div class="text-emerald-400 mb-4">🌲</div>
+                            <h3 class="text-xl font-semibold">Fenwick Tree (Binary Indexed Tree)</h3>
+                            <p class="text-zinc-400 text-sm mt-2">Interactive prefix sum updates &amp; queries</p>
+                        </div>
+                        <div onclick="alert('Sliding Window coming soon!')" 
+                             class="bg-zinc-900 p-8 rounded-3xl cursor-pointer hover:ring-2 hover:ring-emerald-400 transition-all">
+                            <div class="text-emerald-400 mb-4">📊</div>
+                            <h3 class="text-xl font-semibold">Sliding Window Maximum</h3>
+                            <p class="text-zinc-400 text-sm mt-2">See the window move in real-time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress / CC Feed -->
+                <div id="progress-page" class="hidden max-w-md mx-auto text-center pt-12">
+                    <div class="relative mx-auto w-48 h-48 mb-8" id="cc-container">
+                        <img id="cc-pet" src="https://picsum.photos/id/1015/300/300" 
+                             class="w-48 h-48 object-cover rounded-3xl shadow-2xl mx-auto border-4 border-emerald-400" alt="C.C.">
+                    </div>
+                    <h2 class="text-3xl font-medium mb-2">C.C.'s Pizza Counter</h2>
+                    <div id="pizza-count" class="text-6xl font-bold text-emerald-400 mb-2">0</div>
+                    <p class="text-zinc-400">pizzas fed</p>
+                    
+                    <button onclick="feedPizza()" 
+                            class="mt-10 px-10 py-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-3xl text-lg font-medium hover:scale-105 transition-transform flex items-center gap-3 mx-auto">
+                        <span class="text-2xl">🍕</span>
+                        Feed C.C. Pizza
+                    </button>
+                    
+                    <div id="cc-dialogue" class="mt-12 italic text-zinc-300 min-h-[60px]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="add-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 w-full max-w-2xl mx-4 rounded-3xl p-8 max-h-[90vh] overflow-auto">
+            <h2 id="modal-title" class="text-2xl font-semibold mb-6">Add New Snippet</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm mb-2">Title</label>
+                    <input id="form-title" type="text" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm mb-2">Category</label>
+                        <select id="form-category" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
+                            <!-- populated by JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">Complexity</label>
+                        <input id="form-complexity" type="text" placeholder="O(log n)" 
+                               class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm mb-2">C++ Code</label>
+                    <textarea id="form-code" rows="12" 
+                        class="w-full bg-black font-mono border border-zinc-700 rounded-3xl p-5"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm mb-2">Description / Notes</label>
+                    <textarea id="form-desc" rows="4" 
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-3xl p-5"></textarea>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 mt-10">
+                <button onclick="hideModal()" 
+                        class="flex-1 py-4 border border-zinc-700 rounded-2xl hover:bg-zinc-800">Cancel</button>
+                <button onclick="saveSnippet()" 
+                        class="flex-1 py-4 bg-emerald-500 text-black rounded-2xl font-semibold">Save Snippet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating CC -->
+    <div onclick="feedPizza()" id="floating-cc"
+         class="fixed bottom-8 right-8 w-16 h-16 bg-zinc-900 border-4 border-emerald-400 rounded-3xl shadow-2xl cursor-pointer flex items-center justify-center text-4xl hover:scale-110 transition-transform cc-float">
+        🟢
+    </div>
+
+    <script>
+        // Tailwind script
+        function initTailwind() {
+            // Already initialized via CDN
+        }
+
+        // Data Store
+        let snippets = [];
+        let currentSnippetId = null;
+        let pizzaCount = 0;
+        let currentCategoryFilter = null;
+
+        const defaultSnippets = [
+            {
+                id: "fenwick",
+                title: "Fenwick Tree (Binary Indexed Tree)",
+                category: "Data Structures",
+                code: `#include <bits/stdc++.h>\nusing namespace std;\n\nclass FenwickTree {\nprivate:\n    vector<long long> tree;\n    int n;\npublic:\n    FenwickTree(int _n) {\n        n = _n;\n        tree.assign(n+1, 0);\n    }\n    void update(int idx, long long val) {\n        while(idx <= n) {\n            tree[idx] += val;\n            idx += idx & -idx;\n        }\n    }\n    long long query(int idx) {\n        long long sum = 0;\n        while(idx > 0) {\n            sum += tree[idx];\n            idx -= idx & -idx;\n        }\n        return sum;\n    }\n};`,
+                description: "Efficient prefix sums and range updates. Perfect for inversion counting and many other problems.",
+                complexity: "O(log N) per operation",
+                tags: ["ds", "prefix"]
+            },
+            {
+                id: "kadane",
+                title: "Kadane's Algorithm - Max Subarray Sum",
+                category: "Techniques",
+                code: `#include <bits/stdc++.h>\nusing namespace std;\n\nlong long maxSubarraySum(vector<int>& arr) {\n    long long maxSum = LLONG_MIN, curSum = 0;\n    for(int x : arr) {\n        curSum = max((long long)x, curSum + x);\n        maxSum = max(maxSum, curSum);\n    }\n    return maxSum;\n}`,
+                description: "Classic DP for maximum contiguous subarray sum.",
+                complexity: "O(N)",
+                tags: ["dp", "greedy"]
+            },
+            {
+                id: "prefix",
+                title: "Prefix Sum + Hashing",
+                category: "Techniques",
+                code: `#include <bits/stdc++.h>\nusing namespace std;\n\nint subarraySum(vector<int>& nums, int k) {\n    unordered_map<int, int> prefix;\n    prefix[0] = 1;\n    int sum = 0, count = 0;\n    for(int num : nums) {\n        sum += num;\n        if(prefix.count(sum - k)) count += prefix[sum - k];\n        prefix[sum]++;\n    }\n    return count;\n}`,
+                description: "Find number of subarrays with given sum using prefix sums.",
+                complexity: "O(N)",
+                tags: ["prefix", "hash"]
+            },
+            {
+                id: "sliding",
+                title: "Sliding Window Maximum",
+                category: "Techniques",
+                code: `#include <bits/stdc++.h>\nusing namespace std;\n\nvector<int> maxSlidingWindow(vector<int>& nums, int k) {\n    deque<int> dq;\n    vector<int> ans;\n    for(int i = 0; i < nums.size(); i++) {\n        while(!dq.empty() && dq.front() <= i - k) dq.pop_front();\n        while(!dq.empty() && nums[dq.back()] < nums[i]) dq.pop_back();\n        dq.push_back(i);\n        if(i >= k - 1) ans.push_back(nums[dq.front()]);\n    }\n    return ans;\n}`,
+                description: "Maintain maximum in a window of size k using deque.",
+                complexity: "O(N)",
+                tags: ["sliding", "deque"]
+            }
+        ];
+
+        // Load from localStorage
+        function loadData() {
+            const saved = localStorage.getItem("cc_cpp_snippets");
+            if (saved) {
+                snippets = JSON.parse(saved);
+            } else {
+                snippets = [...defaultSnippets];
+                saveData();
+            }
+            
+            const savedPizza = localStorage.getItem("cc_pizza_count");
+            pizzaCount = savedPizza ? parseInt(savedPizza) : 12;
+        }
+
+        function saveData() {
+            localStorage.setItem("cc_cpp_snippets", JSON.stringify(snippets));
+            localStorage.setItem("cc_pizza_count", pizzaCount);
+        }
+
+        // Render categories and snippets
+        function renderCategories() {
+            const container = document.getElementById("categories-list");
+            container.innerHTML = "";
+            
+            const cats = {};
+            snippets.forEach(s => {
+                if (!cats[s.category]) cats[s.category] = [];
+                cats[s.category].push(s);
+            });
+            
+            Object.keys(cats).forEach(cat => {
+                const div = document.createElement("div");
+                div.className = "mb-6";
+                div.innerHTML = `
+                    <div onclick="toggleCategory(this)" class="flex items-center justify-between px-4 py-2 hover:bg-zinc-800 rounded-2xl cursor-pointer group">
+                        <div class="flex items-center gap-3">
+                            <span class="text-emerald-400">📁</span>
+                            <span class="font-medium">${cat}</span>
+                        </div>
+                        <span class="text-xs bg-zinc-800 px-2 py-0.5 rounded-full group-hover:bg-emerald-900 transition-colors">${cats[cat].length}</span>
+                    </div>
+                    <div class="pl-8 mt-1 space-y-1 category-items hidden">
+                        ${cats[cat].map(snippet => `
+                            <div onclick="showSnippet('${snippet.id}'); event.stopImmediatePropagation()" 
+                                 class="px-4 py-2 text-sm hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center gap-2">
+                                <span class="text-emerald-400 text-xs">•</span>
+                                ${snippet.title}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleCategory(el) {
+            const items = el.parentElement.querySelector('.category-items');
+            items.classList.toggle('hidden');
+        }
+
+        function renderSnippets(filteredSnippets = null) {
+            const container = document.getElementById("snippets-grid");
+            container.innerHTML = "";
+            
+            const toRender = filteredSnippets || snippets;
+            
+            document.getElementById("snippet-count").textContent = `${toRender.length} snippets`;
+            
+            toRender.forEach(snippet => {
+                const card = document.createElement("div");
+                card.className = "snippet-card bg-zinc-900 border border-zinc-800 rounded-3xl p-6 cursor-pointer";
+                card.innerHTML = `
+                    <div class="flex justify-between">
+                        <span class="text-xs uppercase tracking-widest px-3 py-1 bg-zinc-800 rounded-full">${snippet.category}</span>
+                        <span class="text-emerald-400 text-xs">${snippet.complexity}</span>
+                    </div>
+                    <h3 class="font-semibold text-lg mt-4 line-clamp-2">${snippet.title}</h3>
+                    <p class="text-zinc-400 text-sm mt-3 line-clamp-2">${snippet.description}</p>
+                `;
+                card.onclick = () => showSnippet(snippet.id);
+                container.appendChild(card);
+            });
+        }
+
+        function filterSnippets(query) {
+            const q = query.toLowerCase();
+            const filtered = snippets.filter(s => 
+                s.title.toLowerCase().includes(q) || 
+                s.description.toLowerCase().includes(q) ||
+                s.category.toLowerCase().includes(q)
+            );
+            renderSnippets(filtered);
+        }
+
+        // Show single snippet
+        function showSnippet(id) {
+            currentSnippetId = id;
+            const snippet = snippets.find(s => s.id === id);
+            if (!snippet) return;
+            
+            document.getElementById("snippets-page").classList.add("hidden");
+            document.getElementById("snippet-detail").classList.remove("hidden");
+            document.getElementById("home-page").classList.add("hidden");
+            
+            document.getElementById("detail-title").textContent = snippet.title;
+            document.getElementById("detail-category").textContent = snippet.category;
+            document.getElementById("detail-desc").textContent = snippet.description;
+            
+            const codeEl = document.getElementById("prism-code");
+            codeEl.textContent = snippet.code;
+            Prism.highlightElement(codeEl);
+            
+            // Simple analysis
+            document.getElementById("detail-analysis").innerHTML = `
+                <div class="flex justify-between"><span class="text-zinc-400">Time</span><span>${snippet.complexity}</span></div>
+                <div class="flex justify-between"><span class="text-zinc-400">Space</span><span>O(N)</span></div>
+                <div class="pt-4 border-t border-zinc-700 text-xs text-emerald-300">Used in ${Math.floor(Math.random()*5 + 3)} contest problems</div>
+            `;
+            
+            document.getElementById("test-input").value = "// Paste test input here";
+        }
+
+        function backToList() {
+            document.getElementById("snippet-detail").classList.add("hidden");
+            document.getElementById("snippets-page").classList.remove("hidden");
+        }
+
+        function editCurrentSnippet() {
+            const snippet = snippets.find(s => s.id === currentSnippetId);
+            if (!snippet) return;
+            
+            hideModal();
+            document.getElementById("modal-title").textContent = "Edit Snippet";
+            document.getElementById("form-title").value = snippet.title;
+            document.getElementById("form-category").value = snippet.category;
+            document.getElementById("form-complexity").value = snippet.complexity;
+            document.getElementById("form-code").value = snippet.code;
+            document.getElementById("form-desc").value = snippet.description;
+            
+            document.getElementById("add-modal").classList.remove("hidden");
+            document.getElementById("add-modal").dataset.editing = currentSnippetId;
+        }
+
+        function deleteCurrentSnippet() {
+            if (!confirm("Delete this snippet?")) return;
+            snippets = snippets.filter(s => s.id !== currentSnippetId);
+            saveData();
+            backToList();
+            renderCategories();
+            renderSnippets();
+        }
+
+        // Modal
+        function showAddModal() {
+            hideModal();
+            document.getElementById("modal-title").textContent = "Add New Snippet";
+            document.getElementById("form-title").value = "";
+            document.getElementById("form-category").value = "Techniques";
+            document.getElementById("form-complexity").value = "";
+            document.getElementById("form-code").value = "";
+            document.getElementById("form-desc").value = "";
+            document.getElementById("add-modal").classList.remove("hidden");
+            delete document.getElementById("add-modal").dataset.editing;
+        }
+
+        function hideModal() {
+            document.getElementById("add-modal").classList.add("hidden");
+        }
+
+        function saveSnippet() {
+            const title = document.getElementById("form-title").value.trim();
+            if (!title) {
+                alert("Title is required!");
+                return;
+            }
+            
+            const category = document.getElementById("form-category").value || "Others";
+            const code = document.getElementById("form-code").value;
+            const desc = document.getElementById("form-desc").value;
+            const complexity = document.getElementById("form-complexity").value || "O(N)";
+            
+            const editingId = document.getElementById("add-modal").dataset.editing;
+            
+            if (editingId) {
+                const snippet = snippets.find(s => s.id === editingId);
+                if (snippet) {
+                    snippet.title = title;
+                    snippet.category = category;
+                    snippet.code = code;
+                    snippet.description = desc;
+                    snippet.complexity = complexity;
+                }
+            } else {
+                const newSnippet = {
+                    id: "custom_" + Date.now(),
+                    title,
+                    category,
+                    code,
+                    description: desc || "User contributed snippet.",
+                    complexity,
+                    tags: ["custom"]
+                };
+                snippets.unshift(newSnippet);
+                pizzaCount += 1; // reward for adding
+            }
+            
+            saveData();
+            hideModal();
+            renderCategories();
+            renderSnippets();
+            if (currentSnippetId) showSnippet(currentSnippetId);
+        }
+
+        function populateCategorySelect() {
+            const select = document.getElementById("form-category");
+            select.innerHTML = "";
+            const cats = new Set(snippets.map(s => s.category));
+            cats.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat;
+                opt.textContent = cat;
+                select.appendChild(opt);
+            });
+        }
+
+        // Test runner (simple simulation)
+        function runTest() {
+            const output = document.getElementById("test-output");
+            output.textContent = "Running simulation...\n\n";
+            
+            setTimeout(() => {
+                output.textContent += "✅ Test passed!\nSample output generated.\n\nC.C. is proud of you~ 🍕";
+                pizzaCount = Math.min(pizzaCount + 1, 999);
+                saveData();
+                updatePizzaCount();
+            }, 800);
+        }
+
+        function markAsLearned() {
+            pizzaCount += 2;
+            saveData();
+            updatePizzaCount();
+            alert("C.C. enjoyed the pizza! +2 🍕");
+        }
+
+        function feedPizza() {
+            pizzaCount += 1;
+            saveData();
+            updatePizzaCount();
+            
+            const dialogue = document.getElementById("cc-dialogue");
+            const messages = [
+                "Thank you, master~ 🥺",
+                "This pizza is the best!",
+                "Mmm... more please!",
+                "You're the best owner ever ❤️"
+            ];
+            dialogue.textContent = messages[Math.floor(Math.random() * messages.length)];
+            
+            // wiggle animation
+            const pet = document.getElementById("cc-pet");
+            pet.style.transform = "rotate(12deg)";
+            setTimeout(() => pet.style.transform = "rotate(-8deg)", 120);
+            setTimeout(() => pet.style.transform = "", 420);
+        }
+
+        function updatePizzaCount() {
+            document.getElementById("pizza-count").textContent = pizzaCount;
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('#main-content > div').forEach(div => {
+                div.classList.add('hidden');
+            });
+            
+            if (page === 'home') {
+                document.getElementById("home-page").classList.remove("hidden");
+            } else if (page === 'snippets') {
+                document.getElementById("snippets-page").classList.remove("hidden");
+                renderSnippets();
+            } else if (page === 'visualizer') {
+                document.getElementById("visualizer-page").classList.remove("hidden");
+            } else if (page === 'progress') {
+                document.getElementById("progress-page").classList.remove("hidden");
+                updatePizzaCount();
+            }
+            
+            // active nav
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('active', link.getAttribute('data-page') === page);
+            });
+        }
+
+        function copyCode() {
+            const code = document.getElementById("prism-code").textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Code copied to clipboard! 📋");
+            });
+        }
+
+        function toggleDarkMode() {
+            // already dark
+            alert("This site is already in its best dark mode~");
+        }
+
+        function resetData() {
+            if (confirm("Reset all data to default?")) {
+                localStorage.removeItem("cc_cpp_snippets");
+                localStorage.removeItem("cc_pizza_count");
+                loadData();
+                renderCategories();
+                renderSnippets();
+            }
+        }
+
+        // Search handler
+        function initSearch() {
+            const searchInput = document.getElementById("search-input");
+            searchInput.addEventListener("input", (e) => {
+                if (document.getElementById("snippets-page").classList.contains("hidden")) return;
+                filterSnippets(e.target.value);
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener("keydown", e => {
+            if (e.key === "/" && document.getElementById("search-input") !== document.activeElement) {
+                e.preventDefault();
+                document.getElementById("search-input").focus();
+            }
+        });
+
+        // Initialize everything
+        function initializeApp() {
+            loadData();
+            renderCategories();
+            populateCategorySelect();
+            renderSnippets();
+            navigateTo('home');
+            initSearch();
+            updatePizzaCount();
+            
+            // Random CC dialogue every 25s
+            setInterval(() => {
+                if (!document.getElementById("progress-page").classList.contains("hidden")) {
+                    feedPizza();
+                }
+            }, 25000);
+            
+            // Make floating CC draggable (simple)
+            const float = document.getElementById("floating-cc");
+            let isDragging = false;
+            let posX = 0, posY = 0;
+            
+            float.addEventListener("mousedown", e => {
+                isDragging = true;
+                posX = e.clientX - float.offsetLeft;
+                posY = e.clientY - float.offsetTop;
+            });
+            
+            document.addEventListener("mousemove", e => {
+                if (!isDragging) return;
+                float.style.left = (e.clientX - posX) + "px";
+                float.style.top = (e.clientY - posY) + "px";
+                float.style.bottom = "auto";
+                float.style.right = "auto";
+            });
+            
+            document.addEventListener("mouseup", () => isDragging = false);
+            
+            console.log("%cCC's C++ Corner initialized successfully! 🟢", "color:#00ff9f; font-family:monospace");
+        }
+
+        window.onload = initializeApp;
+    </script>
+</body>
+</html>
