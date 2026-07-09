@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的信息学题库</title>
+    <title>My Informatics Problem Bank</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/clike/clike.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap');
         
         :root {
             --light-green: #a8e6cf;
@@ -23,7 +23,7 @@
         }
         
         body {
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Noto Sans', sans-serif;
             background: linear-gradient(135deg, #f0fff4 0%, #e6f7e9 100%);
             color: #333;
             display: flex;
@@ -312,7 +312,7 @@
         
         /* Buttons */
         button {
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Noto Sans', sans-serif;
         }
         
         .rounded-btn {
@@ -328,13 +328,13 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
-            🧠 信息学题库
+            🧠 Informatics Bank
         </div>
         
-        <button onclick="showHome()" class="rounded-btn">🏠 主页</button>
+        <button onclick="showHome()" class="rounded-btn">🏠 Home</button>
         
         <div style="margin-top: 20px;">
-            <button onclick="newFile()" style="background: #4caf7a; color: white;">+ 新建 File</button>
+            <button onclick="newFile()" style="background: #4caf7a; color: white;">+ New File</button>
         </div>
         
         <div id="files-list" style="margin-top: 15px;"></div>
@@ -343,32 +343,32 @@
     <!-- Main -->
     <div class="main">
         <div class="header">
-            <h1 id="page-title">欢迎来到我的信息学宝库</h1>
+            <h1 id="page-title">Welcome to My Informatics Problem Bank</h1>
             <div onclick="openCCModal()" class="cc-btn" style="background-image: url('https://i.imgur.com/5Xz5XzK.png'); background-size: cover;"></div>
         </div>
         
         <!-- Home -->
         <div id="home-page" class="content-area active">
             <div class="intro">
-                <h2 style="color: var(--green); margin-bottom: 20px;">📚 个人信息学竞赛题库</h2>
+                <h2 style="color: var(--green); margin-bottom: 20px;">📚 My Personal Informatics Contest Repository</h2>
                 <p style="line-height: 1.8; font-size: 17px;">
-                    这里是我个人整理的信息学竞赛题型仓库。<br>
-                    你可以自由创建 File（大类）和分支（具体题目），记录思维过程、上传配图、编写C++代码并测试。
+                    This is my personal website to store different types of informatics contest problems.<br>
+                    Create your own Files and Branches, record thoughts, upload images, and write C++ solutions.
                 </p>
                 <div style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
                     <div style="background: #f0fff4; padding: 15px 25px; border-radius: 20px; min-width: 220px;">
-                        <strong>每日Pizza系统</strong><br>
-                        每次上传/保存内容获得1 Pizza<br>
-                        每日00:00刷新
+                        <strong>Daily Pizza System</strong><br>
+                        Earn 1 Pizza for each upload or save<br>
+                        Resets daily at 00:00
                     </div>
                     <div style="background: #f0fff4; padding: 15px 25px; border-radius: 20px; min-width: 220px;">
-                        <strong>功能</strong><br>
-                        • 图片上传（可折叠）<br>
-                        • 笔记区<br>
-                        • C++编辑器 + Run
+                        <strong>Features</strong><br>
+                        • Collapsible image upload<br>
+                        • Notes area<br>
+                        • C++ editor with Run & Save
                     </div>
                 </div>
-                <button onclick="showHome()" class="rounded-btn" style="margin-top: 30px; background: var(--green); color: white;">开始整理题库 →</button>
+                <button onclick="showHome()" class="rounded-btn" style="margin-top: 30px; background: var(--green); color: white;">Start Organizing →</button>
             </div>
         </div>
         
@@ -377,44 +377,44 @@
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h2 id="branch-title"></h2>
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="saveCurrentBranch()" class="rounded-btn" style="background: #4caf7a; color: white;">💾 保存所有</button>
-                    <button onclick="deleteCurrentBranch()" class="rounded-btn" style="background: #ff6b6b; color: white;">🗑 删除分支</button>
+                    <button onclick="saveCurrentBranch()" class="rounded-btn" style="background: #4caf7a; color: white;">💾 Save All</button>
+                    <button onclick="deleteCurrentBranch()" class="rounded-btn" style="background: #ff6b6b; color: white;">🗑 Delete Branch</button>
                 </div>
             </div>
             
             <!-- Image -->
             <div>
-                <label style="display: block; margin-bottom: 8px; color: var(--green);">📸 配图（点击上传，可折叠）</label>
+                <label style="display: block; margin-bottom: 8px; color: var(--green);">📸 Problem Image (click to upload, collapsible)</label>
                 <div onclick="toggleImage()" id="image-section" class="image-section">
-                    <p id="upload-prompt">点击此处上传图片</p>
-                    <img id="uploaded-image" class="image-preview" alt="配图">
+                    <p id="upload-prompt">Click here to upload image</p>
+                    <img id="uploaded-image" class="image-preview" alt="Problem Image">
                 </div>
                 <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
             </div>
             
             <!-- Notes -->
             <div>
-                <label style="display: block; margin-bottom: 8px; color: var(--green);">💭 思维笔记 / 题解思路</label>
-                <textarea id="notes-text" class="note-area" placeholder="在这里记录你的思路、关键点、优化方向..."></textarea>
+                <label style="display: block; margin-bottom: 8px; color: var(--green);">💭 Thoughts & Solution Ideas</label>
+                <textarea id="notes-text" class="note-area" placeholder="Record your thinking process, key points, optimizations..."></textarea>
             </div>
             
             <!-- Code -->
             <div class="code-section">
-                <label style="display: block; margin-bottom: 8px; color: var(--green);">💻 C++ 代码</label>
+                <label style="display: block; margin-bottom: 8px; color: var(--green);">💻 C++ Code</label>
                 <div class="code-toolbar">
-                    <button onclick="runCode()">▶️ 运行代码</button>
-                    <button onclick="saveCode()">保存代码</button>
+                    <button onclick="runCode()">▶️ Run Code</button>
+                    <button onclick="saveCode()">Save Code</button>
                 </div>
                 <textarea id="code-editor"></textarea>
                 
                 <div class="input-output">
                     <div class="io-box">
-                        <label>输入 (Input)</label>
-                        <textarea id="input-text" placeholder="测试输入..."></textarea>
+                        <label>Input</label>
+                        <textarea id="input-text" placeholder="Test input..."></textarea>
                     </div>
                     <div class="io-box">
-                        <label>输出 (Output)</label>
-                        <textarea id="output-text" readonly placeholder="运行结果..."></textarea>
+                        <label>Output</label>
+                        <textarea id="output-text" readonly placeholder="Program output will appear here..."></textarea>
                     </div>
                 </div>
             </div>
@@ -431,7 +431,7 @@
             
             <!-- Right -->
             <div class="cc-right">
-                <div class="status" id="cc-status">今天还没有投喂Pizza呢...</div>
+                <div class="status" id="cc-status">No pizza fed today...</div>
                 
                 <div onclick="feedPizza()" id="pizza-feed-area" class="pizza-feed">
                     <img src="https://i.imgur.com/2vN8z8P.png" alt="🍕">
@@ -439,10 +439,10 @@
                 
                 <div style="text-align: center;">
                     <div class="pizza-count" id="pizza-count">0</div>
-                    <div style="font-size: 14px; color: #666;">今日Pizza</div>
+                    <div style="font-size: 14px; color: #666;">Today's Pizzas</div>
                 </div>
                 
-                <button onclick="closeCCModal()" class="rounded-btn" style="background: #4caf7a; color: white; padding: 12px 40px;">关闭</button>
+                <button onclick="closeCCModal()" class="rounded-btn" style="background: #4caf7a; color: white; padding: 12px 40px;">Close</button>
             </div>
         </div>
     </div>
@@ -480,7 +480,6 @@
             if (data.lastUploadDate !== today) {
                 data.hasUploadedToday = false;
                 data.lastUploadDate = today;
-                // Keep pizzas for feeding, but new day starts
                 saveData();
             }
         }
@@ -490,7 +489,7 @@
             data.pizzas += 1;
             data.hasUploadedToday = true;
             saveData();
-            console.log("🍕 +1 Pizza! 今日:", data.pizzas);
+            console.log("🍕 +1 Pizza! Today:", data.pizzas);
         }
         
         // Render sidebar files and branches
@@ -521,7 +520,7 @@
                 
                 // Add branch button
                 const addBranchBtn = document.createElement('button');
-                addBranchBtn.textContent = '+ 新分支';
+                addBranchBtn.textContent = '+ New Branch';
                 addBranchBtn.style.fontSize = '13px';
                 addBranchBtn.style.marginLeft = '25px';
                 addBranchBtn.onclick = () => newBranch(fIdx);
@@ -538,7 +537,7 @@
         }
         
         function newFile() {
-            const name = prompt("输入新File名称（例如：DP专题）", "新File");
+            const name = prompt("Enter new File name (e.g. DP Topics)", "New File");
             if (!name) return;
             
             data.files.push({
@@ -552,13 +551,13 @@
         }
         
         function newBranch(fileIdx) {
-            const name = prompt("输入新分支名称（例如：01背包）", "新分支");
+            const name = prompt("Enter new Branch name (e.g. 0-1 Knapsack)", "New Branch");
             if (!name) return;
             
             data.files[fileIdx].branches.push({
                 name: name,
                 notes: "",
-                code: "// C++代码\n#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    cout << \"Hello, Informatics!\" << endl;\n    return 0;\n}",
+                code: "// C++ Code\n#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    cout << \"Hello, Informatics!\" << endl;\n    return 0;\n}",
                 image: null
             });
             saveData();
@@ -621,13 +620,13 @@
             }
             
             saveData();
-            alert("✅ 已保存分支内容！");
+            alert("✅ Branch saved successfully!");
             awardPizza();
         }
         
         function deleteCurrentBranch() {
             if (data.currentFileIndex === null || data.currentBranchIndex === null) return;
-            if (!confirm("确定删除这个分支吗？")) return;
+            if (!confirm("Delete this branch?")) return;
             
             data.files[data.currentFileIndex].branches.splice(data.currentBranchIndex, 1);
             saveData();
@@ -661,9 +660,8 @@
             const input = document.getElementById('input-text').value;
             
             const outputArea = document.getElementById('output-text');
-            outputArea.value = "模拟运行中...\n\n（浏览器中无法直接执行C++，此处为演示）\n\n输入: " + input + "\n输出: Hello from your algorithm!\n\n💡 建议使用本地Dev-C++或在线IDE验证。";
+            outputArea.value = "Simulating execution...\n\n(Note: Real C++ execution not possible in browser.)\n\nInput: " + (input || "(empty)") + "\n\nOutput: Hello from your algorithm!\n\n💡 Copy code to local IDE (Dev-C++, VS Code, etc.) for full testing.";
             
-            // Fake success
             setTimeout(() => {
                 awardPizza();
             }, 800);
@@ -697,25 +695,24 @@
             const imgEl = document.getElementById('cc-image');
             
             if (data.hasUploadedToday) {
-                statusEl.textContent = "谢谢主人今天的投喂～❤️";
+                statusEl.textContent = "Thanks for today's pizza~ ❤️";
                 statusEl.style.color = "#4caf7a";
-                // Happy CC (use a happy chibi)
-                imgEl.src = "https://i.imgur.com/5Xz5XzK.png"; // placeholder happy
+                imgEl.src = "https://i.imgur.com/5Xz5XzK.png";
             } else {
-                statusEl.textContent = "主人今天好懒... Pizza呢？😠";
+                statusEl.textContent = "No activity today... Where's my pizza? 😠";
                 statusEl.style.color = "#ff6b6b";
-                imgEl.src = "https://i.imgur.com/3MPMx.jpg"; // use one from search
+                imgEl.src = "https://i.imgur.com/3MPMx.jpg";
             }
         }
         
         function feedPizza() {
             if (data.pizzas <= 0) {
-                alert("今天没有Pizza啦～");
+                alert("No pizzas left today~");
                 return;
             }
             
             data.pizzas -= 1;
-            data.hasUploadedToday = true; // mark as fed
+            data.hasUploadedToday = true;
             saveData();
             updateCCView();
             
@@ -725,7 +722,7 @@
                 feedArea.style.transform = 'scale(1)';
             }, 300);
             
-            alert("🍕 已投喂给CC！她看起来开心多了～");
+            alert("🍕 Fed CC! She looks much happier~");
         }
         
         // Keyboard shortcuts
@@ -742,15 +739,15 @@
         window.onload = function() {
             loadData();
             
-            // Default file if empty
+            // Default data if empty
             if (data.files.length === 0) {
                 data.files = [{
-                    name: "基础算法",
+                    name: "Basic Algorithms",
                     expanded: true,
                     branches: [{
                         name: "Hello World",
-                        notes: "第一个C++程序",
-                        code: "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    cout << \"欢迎来到信息学竞赛！\" << endl;\n    return 0;\n}",
+                        notes: "My first C++ program",
+                        code: "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    cout << \"Welcome to Informatics Contest!\" << endl;\n    return 0;\n}",
                         image: null
                     }]
                 }];
@@ -759,8 +756,7 @@
             
             renderFiles();
             
-            // Demo image for CC
-            console.log("%c个人题库网页已就绪！", "color: #4caf7a; font-size: 16px;");
+            console.log("%cInformatics Problem Bank is ready! 🍕", "color: #4caf7a; font-size: 16px;");
         };
     </script>
 </body>
